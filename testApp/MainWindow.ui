@@ -388,6 +388,16 @@
          </item>
         </layout>
        </widget>
+       <widget class="QWidget" name="tabDialogs">
+        <attribute name="title">
+         <string>Dialogs</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_13">
+         <item row="0" column="0">
+          <widget class="QTableView" name="dialogsTable"/>
+         </item>
+        </layout>
+       </widget>
        <widget class="QWidget" name="tabMessaging">
         <attribute name="title">
          <string>Messaging</string>
