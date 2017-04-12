@@ -284,6 +284,10 @@ public:
     QString mimeType() const;
     bool setMimeType(const QString &mimeType);
 
+    // Contact
+    bool getContactInfo(UserInfo *info) const;
+    void setContactInfo(const UserInfo *info);
+
     // Valid for GeoPoint and Document/Sticker
     QString alt() const;
 
@@ -361,6 +365,7 @@ public:
 
 protected:
     friend class ::CTelegramDispatcher;
+    friend class MessageMediaInfo;
     class Private;
 
     Private *d;
