@@ -1006,6 +1006,9 @@ void CTelegramDispatcher::onSelfUserReceived(const TLUser &selfUser)
         emit selfUserAvailable(selfUser.id);
         continueInitialization(StepKnowSelf);
     }
+    if (!existsUser) {
+        emit peerAdded(toPublicPeer(selfUser));
+    }
 }
 
 void CTelegramDispatcher::onUsersReceived(const QVector<TLUser> &users)
@@ -1026,6 +1029,7 @@ void CTelegramDispatcher::onUsersReceived(const QVector<TLUser> &users)
         }
 
         if (!existsUser) {
+            emit peerAdded(toPublicPeer(user));
             emit userInfoReceived(user.id);
         }
     }
@@ -1843,6 +1847,10 @@ void CTelegramDispatcher::emitChatChanged(quint32 id)
             emit createdChatIdReceived(m_updateRequestId, id);
         }
 
+        if (m_chatInfo.contains(id)) {
+            const TLChat *chat = m_chatInfo.value(id);
+            emit peerAdded(toPublicPeer(chat));
+        }
         emit chatAdded(id);
     } else {
         emit chatChanged(id);
