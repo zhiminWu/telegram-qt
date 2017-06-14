@@ -371,11 +371,11 @@ void MainWindow::onMessageMediaDataReceived(Telegram::Peer peer, quint32 message
 void MainWindow::onMessageReceived(const Telegram::Message &message)
 {
     bool groupChatMessage = message.peer().type != Telegram::Peer::User;
-    if (groupChatMessage) {
-        if (message.peer().id != m_activeChatId) {
-            return;
-        }
-    }
+//    if (groupChatMessage) {
+//        if (message.peer().id != m_activeChatId) {
+//            return;
+//        }
+//    }
 
     Telegram::Message processedMessage = message;
 
@@ -403,6 +403,11 @@ void MainWindow::onMessageReceived(const Telegram::Message &message)
         break;
     default:
         break;
+    }
+
+    if (groupChatMessage) {
+        qDebug() << "GCM:";
+        groupChatMessage = false;
     }
 
     if (groupChatMessage) {
