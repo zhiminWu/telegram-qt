@@ -3417,16 +3417,34 @@ void CTelegramConnection::processChannelsGetChannels(RpcProcessingContext *conte
 
 void CTelegramConnection::processChannelsGetDialogs(RpcProcessingContext *context)
 {
-    qWarning() << Q_FUNC_INFO << "Is not implemented yet";
     TLMessagesDialogs result;
     context->readRpcResult(&result);
+    if (!result.isValid()) {
+        return;
+    }
+
+    CTelegramStream stream(context->requestData());
+    TLValue method;
+    quint32 offset = 0;
+    quint32 limit = 0;
+
+    stream >> method; // TLValue::ChannelsGetDialogs
+    stream >> offset;
+    stream >> limit;
+    if (result.tlType != TLValue::MessagesDialogs) {
+        qWarning() << Q_FUNC_INFO << result.tlType.toString() << "processed as Dialogs";
+    }
+    emit channelsDialogsReceived(result, offset, limit);
 }
 
 void CTelegramConnection::processChannelsGetFullChannel(RpcProcessingContext *context)
 {
-    qWarning() << Q_FUNC_INFO << "Is not implemented yet";
     TLMessagesChatFull result;
     context->readRpcResult(&result);
+    if (!result.isValid()) {
+        return;
+    }
+    emit messagesFullChatReceived(result.fullChat, result.chats, result.users);
 }
 
 void CTelegramConnection::processChannelsGetImportantHistory(RpcProcessingContext *context)
@@ -3445,16 +3463,46 @@ void CTelegramConnection::processChannelsGetMessages(RpcProcessingContext *conte
 
 void CTelegramConnection::processChannelsGetParticipant(RpcProcessingContext *context)
 {
-    qWarning() << Q_FUNC_INFO << "Is not implemented yet";
     TLChannelsChannelParticipant result;
     context->readRpcResult(&result);
+    if (!result.isValid()) {
+        return;
+    }
+    CTelegramStream stream(context->requestData());
+    TLValue value;
+    TLInputChannel channel;
+    stream >> value;
+    stream >> channel;
+
+    if (value != TLValue::ChannelsGetParticipant) {
+        qWarning() << Q_FUNC_INFO << "Unexpected request data";
+        return;
+    }
+
+    emit usersReceived(result.users);
+    emit channelsParticipantsReceived(channel.channelId, { result.participant });
 }
 
 void CTelegramConnection::processChannelsGetParticipants(RpcProcessingContext *context)
 {
-    qWarning() << Q_FUNC_INFO << "Is not implemented yet";
     TLChannelsChannelParticipants result;
     context->readRpcResult(&result);
+    if (!result.isValid()) {
+        return;
+    }
+    CTelegramStream stream(context->requestData());
+    TLValue value;
+    TLInputChannel channel;
+    stream >> value;
+    stream >> channel;
+
+    if (value != TLValue::ChannelsGetParticipants) {
+        qWarning() << Q_FUNC_INFO << "Unexpected request data";
+        return;
+    }
+
+    emit usersReceived(result.users);
+    channelsParticipantsReceived(channel.channelId, result.participants);
 }
 
 void CTelegramConnection::processChannelsReadHistory(RpcProcessingContext *context)
@@ -4006,9 +4054,12 @@ void CTelegramConnection::processMessagesUninstallStickerSet(RpcProcessingContex
 
 void CTelegramConnection::processUpdatesGetChannelDifference(RpcProcessingContext *context)
 {
-    qWarning() << Q_FUNC_INFO << "Is not implemented yet";
     TLUpdatesChannelDifference result;
     context->readRpcResult(&result);
+    if (!result.isValid()) {
+        return;
+    }
+    emit updatesChannelDifferenceReceived(result);
 }
 
 void CTelegramConnection::processUpdatesGetDifference(RpcProcessingContext *context)
