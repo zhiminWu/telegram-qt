@@ -286,6 +286,8 @@ public:
     double longitude() const;
     void setGeoPoint(double latitude, double longitude);
 
+    QString url() const;
+    QString displayUrl() const;
     QString siteName() const;
     QString title() const;
     QString description() const;
