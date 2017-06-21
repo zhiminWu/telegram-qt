@@ -133,6 +133,7 @@ public:
 
     // Getters
     const TLUser *getUser(quint32 userId) const;
+    const TLChat *getChat(const Telegram::Peer &peer) const;
     const TLMessage *getMessage(quint32 messageId) const;
 
     bool getUserInfo(Telegram::UserInfo *userInfo, quint32 userId) const;
