@@ -327,7 +327,7 @@ protected:
 
     TLVector<quint32> m_chatIds; // Telegram chat ids vector. Index is "public chat id".
 
-    QMap<quint32, TLChat> m_chatInfo; // Telegram chat id to Chat map
+    QMap<quint32, TLChat*> m_chatInfo; // Telegram chat id to Chat map
     QMap<quint32, TLChatFull> m_chatFullInfo; // Telegram chat id to ChatFull map
 
     QVector<CTelegramModule*> m_modules;
