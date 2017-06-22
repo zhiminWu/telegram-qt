@@ -340,11 +340,6 @@ protected:
 class UserInfo
 {
 public:
-    enum ProfilePhotoSize {
-        Small,
-        Big
-    };
-
     UserInfo();
     UserInfo(const UserInfo &info);
     ~UserInfo();
@@ -359,7 +354,7 @@ public:
     TelegramNamespace::ContactStatus status() const;
     quint32 wasOnline() const;
 
-    bool getProfilePhoto(RemoteFile *file, ProfilePhotoSize size = Small) const;
+    bool getPeerPicture(RemoteFile *file, PeerPictureSize size = PeerPictureSize::Small) const;
 
     // See TelegramNamespace::ContactLastOnline enum and a documentation for the contactLastOnline() method in the cpp file.
 
