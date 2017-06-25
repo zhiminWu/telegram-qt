@@ -379,22 +379,25 @@ void MainWindow::onMessageReceived(const Telegram::Message &message)
 
     Telegram::Message processedMessage = message;
 
+    Telegram::MessageMediaInfo info;
+    m_core->getMessageMediaInfo(&info, processedMessage.id);
+    Telegram::RemoteFile fileInfo;
+    info.getRemoteFileInfo(&fileInfo);
+
     switch (processedMessage.type) {
     case TelegramNamespace::MessageTypePhoto:
     case TelegramNamespace::MessageTypeVideo:
-        m_core->requestMessageMediaData(processedMessage.id);
+        m_fileManager->requestFile(fileInfo);
         break;
     case TelegramNamespace::MessageTypeDocument: {
         Telegram::MessageMediaInfo info;
         m_core->getMessageMediaInfo(&info, processedMessage.id);
         if (info.mimeType().startsWith(QLatin1String("image/"))) {
-            m_core->requestMessageMediaData(processedMessage.id);
+            m_fileManager->requestFile(fileInfo);
         }
     }
         break;
     case TelegramNamespace::MessageTypeGeo: {
-        Telegram::MessageMediaInfo info;
-        m_core->getMessageMediaInfo(&info, processedMessage.id);
         processedMessage.text = QString("%1%2, %3%4").arg(info.latitude()).arg(QChar(0x00b0)).arg(info.longitude()).arg(QChar(0x00b0));
     }
         break;
