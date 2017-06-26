@@ -36,7 +36,6 @@ public:
     ~CTelegramMediaModule();
 
     void setMediaDataBufferSize(quint32 size);
-
     QString peerPictureToken(const Telegram::Peer &peer, const Telegram::PeerPictureSize size) const Q_REQUIRED_RESULT;
     quint32 requestPeerPicture(const Telegram::Peer &peer, const Telegram::PeerPictureSize size) Q_REQUIRED_RESULT;
     bool requestMessageMediaData(quint32 messageId);
