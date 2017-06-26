@@ -400,6 +400,25 @@ protected:
     Private *d;
 };
 
+class DialogInfo
+{
+public:
+    DialogInfo();
+    DialogInfo(const DialogInfo &info);
+    ~DialogInfo();
+
+    DialogInfo &operator=(const DialogInfo &info);
+
+    Peer peer() const;
+    quint32 muteUntil() const;
+
+protected:
+    friend class ::CTelegramDispatcher;
+    class Private;
+
+    Private *d;
+};
+
 }
 
 Q_DECLARE_METATYPE(Telegram::Peer)

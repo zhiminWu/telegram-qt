@@ -643,6 +643,39 @@ bool Telegram::ChatInfo::getPeerPicture(Telegram::RemoteFile *file, Telegram::Pe
     }
 }
 
+Telegram::DialogInfo::DialogInfo() :
+    d(new Private())
+{
+
+}
+
+Telegram::DialogInfo::DialogInfo(const Telegram::DialogInfo &info) :
+    d(new Private())
+{
+    *d = *info.d;
+}
+
+Telegram::DialogInfo::~DialogInfo()
+{
+    delete d;
+}
+
+Telegram::DialogInfo &Telegram::DialogInfo::operator=(const Telegram::DialogInfo &info)
+{
+    *d = *info.d;
+    return *this;
+}
+
+Telegram::Peer Telegram::DialogInfo::peer() const
+{
+    return d->peer;
+}
+
+quint32 Telegram::DialogInfo::muteUntil() const
+{
+    return d->muteUntil;
+}
+
 TelegramNamespace::ContactStatus getApiContactStatus(TLValue status)
 {
     switch (status) {
