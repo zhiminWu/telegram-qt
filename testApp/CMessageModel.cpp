@@ -16,6 +16,7 @@
  */
 
 #include "CMessageModel.hpp"
+#include "CFileManager.hpp"
 #include "CContactModel.hpp"
 
 #include "CTelegramCore.hpp"
@@ -44,6 +45,7 @@ QString messageDeliveryStatusStr(CMessageModel::SMessage::Status status)
 CMessageModel::CMessageModel(CTelegramCore *backend, QObject *parent) :
     QAbstractTableModel(parent),
     m_backend(backend),
+    m_fileManager(nullptr),
     m_contactsModel(nullptr)
 {
     connect(m_backend, SIGNAL(sentMessageIdReceived(quint64,quint32)),
@@ -53,6 +55,12 @@ CMessageModel::CMessageModel(CTelegramCore *backend, QObject *parent) :
             SLOT(setMessageInboxRead(Telegram::Peer,quint32)));
     connect(m_backend, SIGNAL(messageReadOutbox(Telegram::Peer,quint32)),
             SLOT(setMessageOutboxRead(Telegram::Peer,quint32)));
+}
+
+void CMessageModel::setFileManager(CFileManager *manager)
+{
+    m_fileManager = manager;
+    connect(m_fileManager, &CFileManager::requestComplete, this, &CMessageModel::onFileRequestComplete);
 }
 
 void CMessageModel::setContactsModel(CContactModel *model)
@@ -254,6 +262,17 @@ void CMessageModel::addMessage(const SMessage &message)
         m_messages.last().timestamp = QDateTime::currentMSecsSinceEpoch() / 1000;
     }
     endInsertRows();
+}
+
+void CMessageModel::onFileRequestComplete(const QString &uniqueId)
+{
+    if (!m_fileRequests.contains(uniqueId)) {
+        return;
+    }
+    const QByteArray data = m_fileManager->getData(uniqueId);
+    const QPixmap picture = QPixmap::fromImage(QImage::fromData(data));
+    const quint64 messageId = m_fileRequests.take(uniqueId);
+    setMessageMediaData(messageId, picture);
 }
 
 int CMessageModel::setMessageMediaData(quint64 messageId, const QVariant &data)

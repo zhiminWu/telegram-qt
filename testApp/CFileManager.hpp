@@ -43,6 +43,8 @@ struct FileInfo
 
     FileInfo &operator=(const FileInfo &fileInfo);
 
+    QByteArray data() const { return m_data; }
+
     bool hasPeerPicture() const { return m_peerPicture; }
     Telegram::Peer peer() const;
     QPixmap picture() const { return m_picture; }
@@ -69,7 +71,9 @@ public:
     QString requestFile(const Telegram::RemoteFile &file);
     QString requestPeerPicture(const Telegram::Peer &peer, Telegram::PeerPictureSize size = Telegram::PeerPictureSize::Small);
 
+    QByteArray getData(const QString &uniqueId) const;
     QPixmap getPicture(const QString &uniqueId) const;
+    bool getPeerPictureFileInfo(const Telegram::Peer &peer, Telegram::RemoteFile *file, Telegram::PeerPictureSize size = Telegram::PeerPictureSize::Small) const;
 
 signals:
     void requestComplete(const QString &uniqueId);
@@ -79,13 +83,13 @@ protected slots:
     void onFileRequestFinished(quint32 requestId, const Telegram::RemoteFile &requestResult);
 
 protected:
-    void unqueuePendingRequest();
+    QString unqueuePendingRequest();
 
     CTelegramCore *m_backend;
     QHash<QString,FileInfo> m_files; // UniqueId to file info
     QHash<quint32,QString> m_requestToStringId; // Request number to UniqueId
 
-    QHash<QString,FileInfo> m_pendingRequests;
+    QHash<QString,Telegram::RemoteFile> m_pendingRequests;
 
 };
 
